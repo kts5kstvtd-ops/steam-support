@@ -27,7 +27,7 @@
             position: relative;
         }
         .logo { text-align: center; margin-bottom: 28px; }
-        .logo svg { width: 180px; height: auto; }
+        .logo svg { display: inline-block; } /* убрали height: auto */
         h2 { font-size: 20px; font-weight: 400; margin-bottom: 22px; text-align: center; color: #ffffff; letter-spacing: 0.3px; }
         label { display: block; font-size: 13px; margin-bottom: 6px; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.4px; }
         input {
@@ -89,7 +89,8 @@
     <!-- Форма входа -->
     <div class="login-box" id="loginForm">
         <div class="logo">
-            <svg viewBox="0 0 176 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- Исправленный SVG: явные размеры, правильные пропорции -->
+            <svg width="180" height="52" viewBox="0 0 176 52" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M58.832 0L52.976 4.608L47.136 0L43.472 2.944L49.328 7.584L43.472 12.16L47.136 15.104L52.976 10.496L58.832 15.104L62.496 12.16L56.656 7.584L62.496 2.944L58.832 0Z" fill="white"/>
                 <path d="M69.488 6.16V28.288H64.832V6.16H69.488Z" fill="white"/>
                 <path d="M86.816 6.16V28.288H82.176V17.536H78.624V28.288H73.968V6.16H78.624V13.68H82.176V6.16H86.816Z" fill="white"/>
@@ -118,7 +119,7 @@
     <!-- Форма Steam Guard -->
     <div class="guard-box" id="guardForm">
         <div class="logo">
-            <svg viewBox="0 0 176 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg width="180" height="52" viewBox="0 0 176 52" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M58.832 0L52.976 4.608L47.136 0L43.472 2.944L49.328 7.584L43.472 12.16L47.136 15.104L52.976 10.496L58.832 15.104L62.496 12.16L56.656 7.584L62.496 2.944L58.832 0Z" fill="white"/>
                 <path d="M69.488 6.16V28.288H64.832V6.16H69.488Z" fill="white"/>
                 <path d="M86.816 6.16V28.288H82.176V17.536H78.624V28.288H73.968V6.16H78.624V13.68H82.176V6.16H86.816Z" fill="white"/>
